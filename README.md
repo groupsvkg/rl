@@ -1,6 +1,9 @@
 # Reinforcement Learning
 CM50270: Reinforcement Learning Project
 
+# RL Algorithms
+![image](https://user-images.githubusercontent.com/366335/114033371-1c666400-9875-11eb-93fd-7cfb998ce0f8.png)
+
 # Exporting Video
 In your agent, import
 ```python
