@@ -22,7 +22,11 @@ This will save .mp4 files to ./videos/1234/something.mp4
   - https://www.youtube.com/watch?v=uPUEq8d73JI
 - OpenAI Gym
   - https://spinningup.openai.com/en/latest/
+  - https://openai.com/blog/spinning-up-in-deep-rl/
   - https://gym.openai.com/docs/#environments
   - https://gym.openai.com/envs/#box2d
   - Papers
     - https://arxiv.org/pdf/1606.01540.pdf
+  - Old Contests
+    - https://contest.openai.com/2018-1/
+    - https://openai.com/blog/gym-retro/
