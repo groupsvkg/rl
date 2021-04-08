@@ -14,6 +14,12 @@ env = wrappers.Monitor(env, './videos/' + str(time()) + '/')
 ```
 This will save .mp4 files to ./videos/1234/something.mp4
 
+# Coursework
+- Project Report(Overleaf Link)
+  - https://www.overleaf.com/9711224264kfvktffyrctr
+- video presentation of the project
+- source code
+- video of agent performance before and after learning
 
 # Reference
 - David Silver
