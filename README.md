@@ -4,6 +4,21 @@ CM50270: Reinforcement Learning Project
 # RL Algorithms
 ![image](https://user-images.githubusercontent.com/366335/114033371-1c666400-9875-11eb-93fd-7cfb998ce0f8.png)
 
+# Setup
+- Install Anaconda
+  - https://docs.continuum.io/anaconda/install/linux
+- Install OpenAI Spinning Up
+  - https://spinningup.openai.com/en/latest/user/installation.html
+
+# Environments
+- MuJoCo(physics engine) - Paid: But free for students
+  - http://www.mujoco.org/index.html
+- OpenAI Gym - Free
+  - Classic control
+    - https://gym.openai.com/envs/#classic_control
+  - Box2D
+    - https://gym.openai.com/envs/#box2d
+
 # Exporting Video
 In your agent, import
 ```python
