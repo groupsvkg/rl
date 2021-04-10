@@ -4,6 +4,13 @@ CM50270: Reinforcement Learning Project
 # RL Algorithms
 ![image](https://user-images.githubusercontent.com/366335/114033371-1c666400-9875-11eb-93fd-7cfb998ce0f8.png)
 
+# Candidate Algorithms
+- Model-Free
+  - VPG
+  - PPO
+  - DDPG
+  - SAC
+
 # Setup
 - Install Anaconda
   - https://docs.continuum.io/anaconda/install/linux
