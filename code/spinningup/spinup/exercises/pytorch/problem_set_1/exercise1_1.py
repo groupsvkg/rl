@@ -13,6 +13,7 @@ likelihoods of those samples.
 
 """
 
+
 def gaussian_likelihood(x, mu, log_std):
     """
     Args:
@@ -46,7 +47,8 @@ if __name__ == '__main__':
     log_std = torch.rand(dim)
 
     your_gaussian_likelihood = gaussian_likelihood(x, mu, log_std)
-    true_gaussian_likelihood = exercise1_1_soln.gaussian_likelihood(x, mu, log_std)
+    true_gaussian_likelihood = exercise1_1_soln.gaussian_likelihood(
+        x, mu, log_std)
 
     your_result = your_gaussian_likelihood.detach().numpy()
     true_result = true_gaussian_likelihood.detach().numpy()

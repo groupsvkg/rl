@@ -61,3 +61,13 @@ This will save .mp4 files to ./videos/1234/something.mp4
   - Old Contests
     - https://contest.openai.com/2018-1/
     - https://openai.com/blog/gym-retro/
+- Grant Sanderson
+  - https://www.youtube.com/watch?v=aircAruvnKk
+- Deep RL Course
+  - http://rail.eecs.berkeley.edu/deeprlcourse/
+  - https://sites.google.com/view/deep-rl-bootcamp/lectures
+- RL Unit Session
+  - https://minerl.io/
+  - https://www.youtube.com/watch?v=4ohomnzr1LM
+- Frameworks
+  - https://github.com/DLR-RM/stable-baselines3
