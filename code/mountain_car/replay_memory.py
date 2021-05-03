@@ -10,11 +10,11 @@ class ReplayMemory:
 
         self.current_states = np.zeros(
             (replay_memory_capacity, *env.observation_space.shape), dtype=np.float32)
-        self.next_states = np.zeros(
-            (replay_memory_capacity, *env.observation_space.shape), dtype=np.float32)
         self.actions = np.zeros(
             (replay_memory_capacity, env.action_space.shape[0]), dtype=np.float32)
         self.rewards = np.zeros(replay_memory_capacity, dtype=np.float32)
+        self.next_states = np.zeros(
+            (replay_memory_capacity, *env.observation_space.shape), dtype=np.float32)
         self.dones = np.zeros(replay_memory_capacity, dtype=np.float32)
         self.rollback_pointer = 0
         self.sample_interval = 0
