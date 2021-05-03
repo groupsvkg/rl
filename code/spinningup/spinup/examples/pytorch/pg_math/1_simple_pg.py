@@ -5,6 +5,10 @@ from torch.optim import Adam
 import numpy as np
 import gym
 from gym.spaces import Discrete, Box
+from time import time
+
+# Multi Layer Perceptron
+
 
 def mlp(sizes, activation=nn.Tanh, output_activation=nn.Identity):
     # Build a feedforward neural network.
@@ -14,11 +18,13 @@ def mlp(sizes, activation=nn.Tanh, output_activation=nn.Identity):
         layers += [nn.Linear(sizes[j], sizes[j+1]), act()]
     return nn.Sequential(*layers)
 
-def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2, 
+
+def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2,
           epochs=50, batch_size=5000, render=False):
 
     # make environment, check spaces, get obs / act dims
     env = gym.make(env_name)
+    env = gym.wrappers.Monitor(env, './videos/' + str(time()) + '/')
     assert isinstance(env.observation_space, Box), \
         "This example only works for envs with continuous state spaces."
     assert isinstance(env.action_space, Discrete), \
@@ -76,6 +82,7 @@ def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2,
 
             # act in the environment
             act = get_action(torch.as_tensor(obs, dtype=torch.float32))
+            # obs, rew, done, _ = env.step(0)
             obs, rew, done, _ = env.step(act)
 
             # save action, reward
@@ -104,8 +111,10 @@ def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2,
         # take a single policy gradient update step
         optimizer.zero_grad()
         batch_loss = compute_loss(obs=torch.as_tensor(batch_obs, dtype=torch.float32),
-                                  act=torch.as_tensor(batch_acts, dtype=torch.int32),
-                                  weights=torch.as_tensor(batch_weights, dtype=torch.float32)
+                                  act=torch.as_tensor(
+                                      batch_acts, dtype=torch.int32),
+                                  weights=torch.as_tensor(
+                                      batch_weights, dtype=torch.float32)
                                   )
         batch_loss.backward()
         optimizer.step()
@@ -114,8 +123,9 @@ def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2,
     # training loop
     for i in range(epochs):
         batch_loss, batch_rets, batch_lens = train_one_epoch()
-        print('epoch: %3d \t loss: %.3f \t return: %.3f \t ep_len: %.3f'%
-                (i, batch_loss, np.mean(batch_rets), np.mean(batch_lens)))
+        print('epoch: %3d \t loss: %.3f \t return: %.3f \t ep_len: %.3f' %
+              (i, batch_loss, np.mean(batch_rets), np.mean(batch_lens)))
+
 
 if __name__ == '__main__':
     import argparse
@@ -123,6 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--env_name', '--env', type=str, default='CartPole-v0')
     parser.add_argument('--render', action='store_true')
     parser.add_argument('--lr', type=float, default=1e-2)
+    parser.add_argument('--exp_name', type=str, default='simple_pg')
     args = parser.parse_args()
     print('\nUsing simplest formulation of policy gradient.\n')
     train(env_name=args.env_name, render=args.render, lr=args.lr)

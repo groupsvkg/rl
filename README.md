@@ -46,6 +46,10 @@ This will save .mp4 files to ./videos/1234/something.mp4
 - source code
 - video of agent performance before and after learning
 
+# Issue
+- Rendering issue
+  - https://stackoverflow.com/questions/60922076/pyglet-canvas-xlib-nosuchdisplayexception-cannot-connect-to-none-only-happens/67367292#67367292
+
 # Reference
 - David Silver
   - https://www.davidsilver.uk/teaching/
