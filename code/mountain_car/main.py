@@ -9,7 +9,7 @@ from torch.optim import Adam
 
 
 class MountainCar:
-    def __init__(self, env, episodes=10000, max_episode_length=1000,
+    def __init__(self, env, episodes=4000000, max_episode_length=1000,
                  replay_memory_capacity=int(1e6), replay_minibatch_size=64,
                  policy_learning_rate=1e-4, q_learning_rate=1e-3, actor_noise=0.1,
                  discount_factor=0.99, soft_target_update_factor=0.001):
@@ -66,9 +66,11 @@ class MountainCar:
 
             # Execute action $a_t$ and observe reward $r_t$ , next state $s_{t+1}$
             next_state, reward, done, info = self.env.step(action)
-            done = False if episode_length == self.max_episode_length else done
             episode_return += reward
             episode_length += 1
+
+            # Continue if episode length reached maximum allowed length.
+            done = False if episode_length == self.max_episode_length else done
 
             self.env.render()
             print(step, next_state, reward, done)
@@ -88,6 +90,52 @@ class MountainCar:
 
             # Sample random minibatch of transitions $(s_j , a_j , r_j , s_{j+1} )$ from D
             transactions = replay_memory.sample()
+            txn_current_states = transactions["current_states"]
+            txn_actions = transactions["actions"]
+            txn_rewards = transactions["rewards"]
+            txn_next_states = transactions["next_states"]
+            txn_dones = transactions["dones"]
+
+            ########################################
+            # Gradient decent on Critic
+            self.q_optimizer.zero_grad()
+            critic_q_value = self.critic(txn_current_states, txn_actions)
+            with torch.no_grad():
+                y = txn_rewards + self.discount_factor * \
+                    (1-txn_dones) * self.target_critic(txn_next_states,
+                                                       self.target_actor(txn_next_states))
+            critic_q_loss = ((critic_q_value - y)**2).mean()
+            critic_q_loss.backward()
+            self.q_optimizer.step()
+
+            # Freeze critic network
+            self.critic.freeze()
+            #######################################
+
+            # Gradient decent on Actor
+            self.policy_optimizer.zero_grad()
+            actor_policy_loss = - \
+                self.critic(txn_current_states, self.actor(
+                    txn_current_states)).mean()
+            actor_policy_loss.backward()
+            self.policy_optimizer.step()
+            self.critic.unfreeze()
+            #######################################
+
+            # Update target network
+            with torch.no_grad():
+                for actor_p, critic_p, target_actor_p, \
+                    target_critic_p in zip(self.actor.parameters(),
+                                           self.critic.parameters(),
+                                           self.target_actor.parameters(),
+                                           self.target_critic.parameters()):
+                    target_actor_p.data.mul_(self.soft_target_update_factor)
+                    target_actor_p.data.add_(
+                        (1-self.soft_target_update_factor)*actor_p.data)
+
+                    target_critic_p.data.mul_(self.soft_target_update_factor)
+                    target_critic_p.data.add_(
+                        (1-self.soft_target_update_factor)*critic_p.data)
 
 
 mountainCar = MountainCar(gym.make('MountainCarContinuous-v0'))
