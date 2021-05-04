@@ -12,7 +12,7 @@ class MountainCar:
     def __init__(self, env, episodes=400000, max_episode_length=1000,
                  replay_memory_capacity=int(1e6), replay_minibatch_size=64,
                  policy_learning_rate=1e-4, q_learning_rate=1e-3, actor_noise=0.1,
-                 discount_factor=0.99, soft_target_update_factor=0.001):
+                 discount_factor=0.99, soft_target_update_factor=0.995):
         self.env = env
         self.episodes = episodes
         self.max_episode_length = max_episode_length
@@ -57,7 +57,8 @@ class MountainCar:
         episode_length = 0
 
         for step in range(self.episodes):
-            if np.random.choice([True, False], p=[0.9, 0.1]):
+            # if np.random.choice([True, False], p=[0.9, 0.1]):
+            if step > 10000:
                 action = self.actor.action(torch.as_tensor(
                     current_state, dtype=torch.float32)) + \
                     self.actor_noise * \
