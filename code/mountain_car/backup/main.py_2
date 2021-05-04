@@ -9,20 +9,12 @@ from torch.optim import Adam
 
 
 class MountainCar:
-    # def __init__(self, env, test_env, episodes=400000, max_episode_length=1000,
-    #              replay_memory_capacity=int(1e6), replay_minibatch_size=64,
-    #              policy_learning_rate=1e-4, q_learning_rate=1e-3, actor_noise=0.1,
-    #              discount_factor=0.99, soft_target_update_factor=0.001,
-    #              update_start=1000, update_interval=1, test_start=4000, test_interval=2000,
-    #              test_episodes=1, action_start=10000):
-    def __init__(self, env, test_env, episodes=400000, max_episode_length=1000,
-                 replay_memory_capacity=int(1e6), replay_minibatch_size=64,
-                 policy_learning_rate=0.001, q_learning_rate=0.001, actor_noise=0.2,
-                 discount_factor=0.99, soft_target_update_factor=0.001,
-                 update_start=1, update_interval=50, test_start=2000, test_interval=100,
-                 test_episodes=1, action_start=500):
+    def __init__(self, env, episodes=400000, max_episode_length=997,
+                 replay_memory_capacity=int(1e6), replay_minibatch_size=1024,
+                 policy_learning_rate=1e-4, q_learning_rate=1e-3, actor_noise=0.1,
+                 discount_factor=0.99, soft_target_update_factor=0.995,
+                 update_start=1000, update_interval=1):
         self.env = env
-        self.test_env = test_env
         self.episodes = episodes
         self.max_episode_length = max_episode_length
         self.replay_memory_capacity = replay_memory_capacity
@@ -34,12 +26,6 @@ class MountainCar:
         self.soft_target_update_factor = soft_target_update_factor
         self.update_start = update_start
         self.update_interval = update_interval
-
-        self.test_start = test_start
-        self.test_interval = test_interval
-        self.test_episodes = test_episodes
-
-        self.action_start = action_start
 
         # Actor/Critic
         self.actor = Actor(self.env)
@@ -84,12 +70,11 @@ class MountainCar:
 
         for step in range(self.episodes):
             # if np.random.choice([True, False], p=[0.9, 0.1]):
-            if step > self.action_start:
+            if step > 10000:
                 action = self.actor.action(torch.as_tensor(
                     current_state, dtype=torch.float32)) + \
                     self.actor_noise * \
-                    np.random.uniform()
-                # np.random.randn(self.max_action_value)
+                    np.random.randn(self.max_action_value)
                 action = np.clip(action, self.min_action_value,
                                  self.max_action_value)
             else:
@@ -103,7 +88,7 @@ class MountainCar:
             # Continue if episode length reached maximum allowed length.
             done = False if episode_length == self.max_episode_length else done
 
-            # self.env.render()
+            self.env.render()
 
             # Store transition $(s_t , a_t , r_t , s_{t+1} )$ in Ds
             replay_memory.store(current_state, action,
@@ -114,7 +99,7 @@ class MountainCar:
 
             # Reset on terminal state or episode length reaches maximum allowed length
             if done or (episode_length == self.max_episode_length):
-                # print(step, next_state, action, reward, done)
+                print(step, next_state, action, reward, done)
                 current_state = self.env.reset()
                 episode_return = 0
                 episode_length = 0
@@ -156,6 +141,9 @@ class MountainCar:
                     self.critic.unfreeze()
                     #######################################
 
+                    print("policy_loss: ", actor_policy_loss,
+                          ", q_loss: ", critic_q_loss)
+
                     # Update target network
                     with torch.no_grad():
                         for actor_p, critic_p, target_actor_p, \
@@ -172,26 +160,9 @@ class MountainCar:
                                 self.soft_target_update_factor)
                             target_critic_p.data.add_(
                                 (1-self.soft_target_update_factor)*critic_p.data)
-            if step > self.test_start and step % self.test_interval == 0:
-                for j in range(self.test_episodes):
-                    test_current_state, test_done, test_episode_return, test_episode_length = self.test_env.reset(), False, 0, 0
-                    while not(test_done or (test_episode_length == self.max_episode_length)):
-                        # Take deterministic actions at test time (noise_scale=0)
-                        test_action = self.actor.action(torch.as_tensor(
-                            test_current_state, dtype=torch.float32))
-                        test_action = np.clip(test_action, self.min_action_value,
-                                              self.max_action_value)
-                        test_current_state, test_reward, test_done, _ = self.test_env.step(
-                            test_action)
-                        test_episode_return += test_reward
-                        test_episode_length += 1
-                        self.test_env.render()
-                    print(step, ", ", j, "return: ", test_episode_return,
-                          ", ep len: ", test_episode_length)
 
 
-mountainCar = MountainCar(
-    env=gym.make('MountainCarContinuous-v0'), test_env=gym.make('MountainCarContinuous-v0'))
+mountainCar = MountainCar(gym.make('MountainCarContinuous-v0'))
 mountainCar.apply_ddgp()
 
 #  import gym
