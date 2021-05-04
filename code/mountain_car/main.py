@@ -9,7 +9,7 @@ from torch.optim import Adam
 
 
 class MountainCar:
-    def __init__(self, env, episodes=4000000, max_episode_length=1000,
+    def __init__(self, env, episodes=400000, max_episode_length=1000,
                  replay_memory_capacity=int(1e6), replay_minibatch_size=64,
                  policy_learning_rate=1e-4, q_learning_rate=1e-3, actor_noise=0.1,
                  discount_factor=0.99, soft_target_update_factor=0.001):
@@ -57,12 +57,15 @@ class MountainCar:
         episode_length = 0
 
         for step in range(self.episodes):
-            action = self.actor.action(torch.as_tensor(
-                current_state, dtype=torch.float32)) + \
-                self.actor_noise * \
-                np.random.randn(self.max_action_value)
-            action = np.clip(action, self.min_action_value,
-                             self.max_action_value)
+            if np.random.choice([True, False], p=[0.9, 0.1]):
+                action = self.actor.action(torch.as_tensor(
+                    current_state, dtype=torch.float32)) + \
+                    self.actor_noise * \
+                    np.random.randn(self.max_action_value)
+                action = np.clip(action, self.min_action_value,
+                                 self.max_action_value)
+            else:
+                action = self.env.action_space.sample()
 
             # Execute action $a_t$ and observe reward $r_t$ , next state $s_{t+1}$
             next_state, reward, done, info = self.env.step(action)
