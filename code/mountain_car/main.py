@@ -6,6 +6,8 @@ import gym
 import numpy as np
 import torch
 from torch.optim import Adam
+from gym import wrappers
+from time import time
 
 
 class MountainCar:
@@ -49,12 +51,6 @@ class MountainCar:
         self.target_actor = deepcopy(self.actor)
         self.target_critic = deepcopy(self.critic)
 
-        # # Optimizers
-        # self.policy_optimizer = Adam(self.actor.policy.parameters(),
-        #                              lr=self.actor_learning_rate)
-        # self.q_optimizer = Adam(self.critic.q.parameters(),
-        #                         lr=self.critic_learning_rate)
-
         # Action Range
         self.max_action_value = int(self.env.action_space.high[0])
         self.min_action_value = int(self.env.action_space.low[0])
@@ -83,7 +79,6 @@ class MountainCar:
         episode_length = 0
 
         for step in range(self.episodes):
-            # if np.random.choice([True, False], p=[0.9, 0.1]):
             if step > self.action_start:
                 action = self.actor.action(torch.as_tensor(
                     current_state, dtype=torch.float32)) + \
@@ -176,7 +171,6 @@ class MountainCar:
                 for j in range(self.test_episodes):
                     test_current_state, test_done, test_episode_return, test_episode_length = self.test_env.reset(), False, 0, 0
                     while not(test_done or (test_episode_length == self.max_episode_length)):
-                        # Take deterministic actions at test time (noise_scale=0)
                         test_action = self.actor.action(torch.as_tensor(
                             test_current_state, dtype=torch.float32))
                         test_action = np.clip(test_action, self.min_action_value,
@@ -185,28 +179,19 @@ class MountainCar:
                             test_action)
                         test_episode_return += test_reward
                         test_episode_length += 1
-                        self.test_env.render()
+                        self.test_env.render(mode='rgb_array')
                     print(step, ", ", j, "return: ", test_episode_return,
                           ", ep len: ", test_episode_length)
 
 
+env1 = gym.make('MountainCarContinuous-v0')
+env2 = gym.make('MountainCarContinuous-v0')
+
+env2 = wrappers.Monitor(env2, './videos/' + str(time()) + '/')
+
 mountainCar = MountainCar(
-    env=gym.make('MountainCarContinuous-v0'), test_env=gym.make('MountainCarContinuous-v0'))
+    env=env1, test_env=env2)
+
+# mountainCar = MountainCar(
+#     env=gym.make('MountainCarContinuous-v0'), test_env=gym.make('MountainCarContinuous-v0'))
 mountainCar.apply_ddgp()
-
-#  import gym
-# env = gym.make('MountainCarContinuous-v0')
-# print("State Space:  ", env.observation_space)
-# print("Action Space: ", env.action_space.high)
-# for i_episode in range(2):
-#     observation = env.reset()
-#     for t in range(100):
-#         env.render()
-#         action = env.action_space.sample()
-#         observation, reward, done, info = env.step(action)
-#         print(i_episode, t, observation, action, reward, done, info)
-
-#         if done:
-#             print("Episode finished after {} timesteps".format(t+1))
-#             break
-# env.close()
