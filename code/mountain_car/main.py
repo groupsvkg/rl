@@ -19,8 +19,8 @@ class MountainCar:
                  replay_memory_capacity=int(1e6), replay_minibatch_size=64,
                  policy_learning_rate=0.001, q_learning_rate=0.001, actor_noise=0.2,
                  discount_factor=0.99, soft_target_update_factor=0.001,
-                 update_start=1, update_interval=50, test_start=2000, test_interval=100,
-                 test_episodes=1, action_start=500):
+                 update_start=1, update_interval=1, test_start=2000, test_interval=4000,
+                 test_episodes=5, action_start=500):
         self.env = env
         self.test_env = test_env
         self.episodes = episodes
