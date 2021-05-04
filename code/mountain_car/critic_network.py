@@ -9,14 +9,7 @@ class Critic(nn.Module):
         super().__init__()
         input_dimension = env.observation_space.shape[0] + \
             env.action_space.shape[0]
-        # self.q = nn.Sequential(
-        #     nn.Linear(input_dimension, 400),
-        #     nn.ReLU(),
-        #     nn.Linear(400, 300),
-        #     nn.ReLU(),
-        #     nn.Linear(300, 1),
-        #     nn.Identity()
-        # )
+
         self.q = nn.Sequential(
             nn.Linear(input_dimension, 64),
             nn.ReLU(),
