@@ -55,7 +55,7 @@ class MountainCar:
         self.max_action_value = int(self.env.action_space.high[0])
         self.min_action_value = int(self.env.action_space.low[0])
 
-    def apply_ddgp(self):
+    def apply_ddpg(self):
         torch.manual_seed(0)
         np.random.seed(0)
 
@@ -194,4 +194,4 @@ mountainCar = MountainCar(
 
 # mountainCar = MountainCar(
 #     env=gym.make('MountainCarContinuous-v0'), test_env=gym.make('MountainCarContinuous-v0'))
-mountainCar.apply_ddgp()
+mountainCar.apply_ddpg()

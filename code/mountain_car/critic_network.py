@@ -14,7 +14,6 @@ class Critic(nn.Module):
             nn.Linear(input_dimension, 64),
             nn.ReLU(),
             nn.Linear(64, 64),
-            # nn.ReLU(),
             nn.Linear(64, 1),
             nn.Identity()
         )
